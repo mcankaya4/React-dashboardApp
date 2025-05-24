@@ -41,7 +41,43 @@
   }
 }
 
+@layer components {
+  .sidebar.active {
+    @apply rounded-sm bg-gray-50 text-gray-800;
+  }
+
+  .form-row:has(button) {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 12px !important;
+  }
+}
+
 @layer utilities {
+  .file-input {
+    font-size: 14px;
+    border-radius: theme(borderRadius.sm);
+  }
+
+  .file-input::file-selector-button {
+    font: inherit;
+    font-weight: 500;
+    padding: 8px 12px;
+    margin-right: 12px;
+    border-radius: theme(borderRadius.sm);
+    border: none;
+    color: theme(colors.indigo.50);
+    background-color: theme(colors.indigo.600);
+    cursor: pointer;
+    transition:
+        color 0.2s,
+        background-color 0.2s;
+  }
+
+  .file-input::file-selector-button:hover {
+    background-color: theme(colors.indigo.700);
+  }
+
   .spinner {
     width: 40px;
     aspect-ratio: 1;

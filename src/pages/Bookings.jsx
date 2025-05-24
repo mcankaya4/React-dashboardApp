@@ -1,5 +1,12 @@
+import Row from "../ui/Row.jsx";
+
 function Bookings() {
-  return <div>Bookings Page</div>;
+  return (
+    <Row>
+      <h1>All Bookings</h1>
+      <p>Test</p>
+    </Row>
+  );
 }
 
 export default Bookings;
