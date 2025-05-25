@@ -1,5 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { getCabins } from "../../services/apiCabins.js";
 import Spinner from "../../ui/Spinner.jsx";
 import CabinListHeader from "./CabinListHeader.jsx";
 import CabinListItem from "./CabinListItem.jsx";
@@ -7,7 +5,7 @@ import { useGetCabins } from "./useGetCabins.js";
 
 function CabinList() {
   // custom hook ile cabins, isPending ve error verilerini alıyoruz.
-  const { cabins, isPending, error } = useGetCabins();
+  const { cabins, isPending } = useGetCabins();
 
   // Spinner, kabinlerin yükleme durumuna göre görüntülenir.
   if (isPending) return <Spinner />;

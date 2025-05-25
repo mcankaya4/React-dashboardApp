@@ -2,6 +2,10 @@ import FormRow from "../../ui/FormRow.jsx";
 import Button from "../../ui/Button.jsx";
 import { useForm } from "react-hook-form";
 import { useCreateCabin } from "./useCreateCabin.js";
+import FormInput from "../../ui/FormInput.jsx";
+import FormTextarea from "../../ui/FormTextarea.jsx";
+import FormFileInput from "../../ui/FormFileInput.jsx";
+import Form from "../../ui/Form.jsx";
 
 function CreateCabinForm() {
   // hook-form ile inputları kayıt ediyoruz ve event'i karşılıyoruz.
@@ -36,120 +40,86 @@ function CreateCabinForm() {
   }
 
   return (
-    <form
+    <Form
       onSubmit={handleSubmit(onSubmit, onError)}
       className="overflow-hidden rounded-md border border-gray-200 bg-white px-10 py-6 text-sm"
     >
       <FormRow>
-        <label htmlFor="name" className="font-medium">
-          Cabin name
-        </label>
-        <input
+        <FormInput
+          label="Cabin name"
           id="name"
           type="text"
-          className="rounded-sm border border-gray-300 bg-white px-3 py-2 shadow-sm"
-          {...register("name", { required: "This field is required" })}
+          register={register}
+          validation={{ required: "This field is required" }}
+          error={errors?.name}
         />
-        {errors?.name?.message && (
-          <span className="text-sm text-red-700">{errors.name.message}</span>
-        )}
       </FormRow>
 
       <FormRow>
-        <label htmlFor="capacity" className="font-medium">
-          Maximum capacity
-        </label>
-        <input
+        <FormInput
+          label="Maximum capacity"
           id="capacity"
           type="number"
-          className="rounded-sm border border-gray-300 bg-white px-3 py-2 shadow-sm"
-          {...register("capacity", {
+          register={register}
+          validation={{
             required: "This field is required",
             min: {
               value: 1,
               message: "Capacity should be greater than 1",
             },
-          })}
+          }}
+          error={errors?.capacity}
         />
-        {errors?.capacity?.message && (
-          <span className="text-sm text-red-700">
-            {errors.capacity.message}
-          </span>
-        )}
       </FormRow>
 
       <FormRow>
-        <label htmlFor="regularPrice" className="font-medium">
-          Regular price
-        </label>
-        <input
+        <FormInput
+          label="Regular price"
           id="regularPrice"
           type="number"
-          className="rounded-sm border border-gray-300 bg-white px-3 py-2 shadow-sm"
-          {...register("regularPrice", { required: "This field is required" })}
+          register={register}
+          validation={{ required: "This field is required" }}
+          error={errors?.regularPrice}
         />
-        {errors?.regularPrice?.message && (
-          <span className="text-sm text-red-700">
-            {errors.regularPrice.message}
-          </span>
-        )}
       </FormRow>
 
       <FormRow>
-        <label htmlFor="discount" className="font-medium">
-          Discount
-        </label>
-        <input
-          defaultValue="0"
+        <FormInput
+          label="Discount"
           id="discount"
           type="number"
-          className="rounded-sm border border-gray-300 bg-white px-3 py-2 shadow-sm"
-          {...register("discount", {
+          register={register}
+          validation={{
             required: "This field is required",
             validate: (value) => {
               if (value > 100) return "indirim 100'den büyük olamaz.";
               if (+value >= +getValues().regularPrice)
                 return "regularPrice'den büyük olamaz.";
             },
-          })}
+          }}
+          error={errors?.discount}
         />
-        {errors?.discount?.message && (
-          <span className="text-sm text-red-700">
-            {errors.discount.message}
-          </span>
-        )}
       </FormRow>
 
       <FormRow>
-        <label htmlFor="description" className="font-medium">
-          Description for website
-        </label>
-        <textarea
+        <FormTextarea
+          label="Description for website"
           id="description"
-          className="h-20 w-full rounded-sm border border-gray-300 bg-white px-3 py-2 shadow-sm"
-          {...register("description", { required: "This field is required" })}
-        ></textarea>
-        {errors?.description?.message && (
-          <span className="text-sm text-red-700">
-            {errors.description.message}
-          </span>
-        )}
+          register={register}
+          validation={{ required: "This field is required" }}
+          error={errors?.description}
+        />
       </FormRow>
 
       <FormRow>
-        <label htmlFor="image" className="font-medium">
-          Cabin photo
-        </label>
-        <input
-          type="file"
+        <FormFileInput
+          label="Cabin photo"
           id="image"
           accept="image/*"
-          className="file-input"
-          {...register("image", { required: "This field is required" })}
+          register={register}
+          validation={{ required: "This field is required" }}
+          error={errors?.image}
         />
-        {errors?.image?.message && (
-          <span className="text-sm text-red-700">{errors.image.message}</span>
-        )}
       </FormRow>
 
       <FormRow>
@@ -158,7 +128,7 @@ function CreateCabinForm() {
         </Button>
         <Button disabled={isPending}>Add cabin</Button>
       </FormRow>
-    </form>
+    </Form>
   );
 }
 

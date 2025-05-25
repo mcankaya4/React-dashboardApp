@@ -1,18 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { editCabin } from "../../services/apiCabins.js";
 import toast from "react-hot-toast";
+import { updateSetting } from "../../services/apiSettings.js";
 
-export function useEditCabin() {
+export function useUpdateSettings() {
   // react query ile kayıt ediyoruz.
   const queryClient = useQueryClient();
 
-  const { isUpdating, mutate: editMutate } = useMutation({
+  const { isPending, mutate: updateMutate } = useMutation({
     // mutate içerisinde gelecek data'lar birden fazla ise nesne olarak alınır.
-    mutationFn: ({ newCabinData, id }) => editCabin(newCabinData, id),
+    mutationFn: updateSetting,
     onSuccess: () => {
-      toast.success("Cabin updated successfully!");
+      toast.success("Settings updated successfully!");
       queryClient.invalidateQueries({
-        queryKey: ["cabins"],
+        queryKey: ["settings"],
       });
       // kayıt başarılıysa formu sıfırla
       // reset'i hook'a parametre olarak alabiliriz fakat almayıp diğer tarafta
@@ -24,5 +24,5 @@ export function useEditCabin() {
     },
   });
 
-  return { isUpdating, editMutate };
+  return { isPending, updateMutate };
 }
