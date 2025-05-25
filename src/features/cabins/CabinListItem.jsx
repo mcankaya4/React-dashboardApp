@@ -2,16 +2,34 @@ import { formatCurrency } from "../../utils/helpers.js";
 import { useState } from "react";
 import EditCabinForm from "./EditCabinForm.jsx";
 import { useDeleteCabin } from "./useDeleteCabin.js";
+import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import { useCreateCabin } from "./useCreateCabin.js";
 
 function CabinListItem({ cabin }) {
   const [showEditForm, setShowEditForm] = useState(false);
-  const { id, image, name, capacity, regularPrice: price, discount } = cabin;
+  const { id, image, name, capacity, description, regularPrice, discount } =
+    cabin;
 
   // Cabin silmek için oluşturduğumuz custom hook.
   const { isPending, mutate } = useDeleteCabin();
 
+  // Duplicate için useCreateCabin hook kullanıyoruz.
+  const { isPending: isDuplicatePending, mutate: duplicateMutate } =
+    useCreateCabin();
+
   function handleShowEditForm() {
     setShowEditForm((show) => !show);
+  }
+
+  function handleDuplicate() {
+    duplicateMutate({
+      name: `Copy of ${name}`,
+      capacity,
+      regularPrice,
+      discount,
+      image,
+      description,
+    });
   }
 
   return (
@@ -30,23 +48,30 @@ function CabinListItem({ cabin }) {
           Fits up to {capacity} guests
         </div>
         <div className="hidden font-semibold lg:block">
-          {formatCurrency(price)}
+          {formatCurrency(regularPrice)}
         </div>
         <div className="hidden font-medium text-green-700 lg:block">
           {discount ? formatCurrency(discount) : <span>&mdash;</span>}
         </div>
         <div className="flex gap-1">
-          <button onClick={handleShowEditForm} className="bg-emerald-200 p-1">
-            Edit
+          <button
+            className="bg-amber-200 p-2"
+            disabled={isDuplicatePending}
+            onClick={handleDuplicate}
+          >
+            <HiSquare2Stack className="h-4 w-4" />
+          </button>
+          <button onClick={handleShowEditForm} className="bg-emerald-200 p-2">
+            <HiPencil className="h-4 w-4" />
           </button>
           <button
-            className="bg-red-200 p-1"
+            className="bg-red-200 p-2"
             disabled={isPending}
             onClick={() => {
               mutate(id);
             }}
           >
-            Delete
+            <HiTrash className="h-4 w-4" />
           </button>
         </div>
       </div>

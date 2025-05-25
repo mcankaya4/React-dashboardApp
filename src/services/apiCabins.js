@@ -51,8 +51,13 @@ export async function getCabins() {
 
 // Create cabin
 export async function createCabin(newCabin) {
+  const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
+
+  // Image güncellenmediyse aynı kaydet, güncelleme varsa yeni path ve name belirle.
   const imgName = `${Math.random()}-${newCabin.image.name}`.replace("/", "");
-  const imgPath = `${supabaseUrl}/storage/v1/object/public/cabin-images/${imgName}`;
+  const imgPath = hasImagePath
+    ? newCabin.image
+    : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imgName}`;
 
   const { data, error } = await supabase
     .from("cabins")
@@ -63,6 +68,10 @@ export async function createCabin(newCabin) {
     console.log(error);
     throw new Error("Cannot create cabin from supabase");
   }
+
+  // Burası duplicate için yazıldı, eğer zaten bir image varsa string olan o halde
+  // yükleme yapma
+  if (hasImagePath) return data;
 
   // upload img
   const { error: storageError } = await supabase.storage
@@ -99,6 +108,10 @@ export async function editCabin(newCabin, id) {
     console.log(error);
     throw new Error("Cannot create cabin from supabase");
   }
+
+  // Burası duplicate için yazıldı, eğer zaten bir image varsa string olan o halde
+  // yükleme yapma
+  if (hasImagePath) return data;
 
   // upload img
   const { error: storageError } = await supabase.storage
