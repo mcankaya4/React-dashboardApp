@@ -3,21 +3,13 @@ import { getCabins } from "../../services/apiCabins.js";
 import Spinner from "../../ui/Spinner.jsx";
 import CabinListHeader from "./CabinListHeader.jsx";
 import CabinListItem from "./CabinListItem.jsx";
+import { useGetCabins } from "./useGetCabins.js";
 
 function CabinList() {
-  /* In queryKey, we call getCabins in services/apiCabins, and
-  we cache it under the name "cabins". This returns us 3 pieces of data,
-  data returned as a result of data, isPending and error */
-  const {
-    data: cabins,
-    isPending,
-    error,
-  } = useQuery({
-    queryKey: ["cabins"],
-    queryFn: getCabins,
-  });
+  // custom hook ile cabins, isPending ve error verilerini alıyoruz.
+  const { cabins, isPending, error } = useGetCabins();
 
-  // The spinner is displayed according to the loading status of the cabins.
+  // Spinner, kabinlerin yükleme durumuna göre görüntülenir.
   if (isPending) return <Spinner />;
 
   return (

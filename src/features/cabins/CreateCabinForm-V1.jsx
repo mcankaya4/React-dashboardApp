@@ -1,31 +1,64 @@
 import FormRow from "../../ui/FormRow.jsx";
 import Button from "../../ui/Button.jsx";
 import { useForm } from "react-hook-form";
-import { useCreateCabin } from "./useCreateCabin.js";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createEditCabin } from "../../services/apiCabins.js";
+import toast from "react-hot-toast";
 
-function CreateCabinForm() {
+function CreateCabinForm({ cabinToEdit = {} }) {
+  const { id: editId, ...editValues } = cabinToEdit;
+  const isEditSession = Boolean(editId);
+
   // hook-form ile inputları kayıt ediyoruz ve event'i karşılıyoruz.
-  const { register, handleSubmit, reset, getValues, formState } = useForm();
+  // useForm'daki defaultValues sayesinde değerleri form'a aktardık.
+  const { register, handleSubmit, reset, getValues, formState } = useForm({
+    defaultValues: isEditSession ? editValues : {},
+  });
 
   // Tüm hataları nesne olarak yakalıyoruz.
   const { errors } = formState;
 
-  // Cabin create için oluşturduğumuz custom hook.
-  const { isPending, mutate } = useCreateCabin();
+  // react query ile kayıt ediyoruz.
+  const queryClient = useQueryClient();
+  const { isPending: isCreating, mutate: createMutate } = useMutation({
+    mutationFn: createEditCabin,
+    onSuccess: () => {
+      toast.success("Cabin created successfully!");
+      queryClient.invalidateQueries({
+        queryKey: ["cabins"],
+      });
+      // kayıt başarılıysa formu sıfırla
+      reset();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const { isPending: isEditing, mutate: editMutate } = useMutation({
+    mutationFn: ({ newCabinData, id }) => createEditCabin(newCabinData, id),
+    onSuccess: () => {
+      toast.success("Cabin updated successfully!");
+      queryClient.invalidateQueries({
+        queryKey: ["cabins"],
+      });
+      // kayıt başarılıysa formu sıfırla
+      reset();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const isWorking = isEditing || isCreating;
 
   function onSubmit(data) {
-    console.log(data);
+    const image = typeof data.image === "string" ? data.image : data.image[0];
     // input verilerine data ile erişim sağlıyoruz.
     // mutate içerisine image'ı dahil ediyoruz. image[0] sabit olarak kalacak.
-    mutate(
-      { ...data, image: data.image[0] },
-      {
-        onSuccess: (data) => {
-          console.log(data);
-          reset();
-        },
-      },
-    );
+    if (isEditSession)
+      editMutate({ newCabinData: { ...data, image }, id: editId });
+    else createMutate({ ...data, image });
   }
 
   function onError(errors) {
@@ -145,7 +178,9 @@ function CreateCabinForm() {
           id="image"
           accept="image/*"
           className="file-input"
-          {...register("image", { required: "This field is required" })}
+          {...register("image", {
+            required: isEditSession ? false : "This field is" + " required",
+          })}
         />
         {errors?.image?.message && (
           <span className="text-sm text-red-700">{errors.image.message}</span>
@@ -156,7 +191,9 @@ function CreateCabinForm() {
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button disabled={isPending}>Add cabin</Button>
+        <Button disabled={isWorking}>
+          {isEditSession ? "Edit cabin" : "Create new cabin"}
+        </Button>
       </FormRow>
     </form>
   );

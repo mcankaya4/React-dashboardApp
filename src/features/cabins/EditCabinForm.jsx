@@ -1,27 +1,37 @@
 import FormRow from "../../ui/FormRow.jsx";
 import Button from "../../ui/Button.jsx";
 import { useForm } from "react-hook-form";
-import { useCreateCabin } from "./useCreateCabin.js";
+import { useEditCabin } from "./useEditCabin.js";
 
-function CreateCabinForm() {
+function EditCabinForm({ cabin = {} }) {
+  const { id: editId, ...editValues } = cabin;
+
   // hook-form ile inputları kayıt ediyoruz ve event'i karşılıyoruz.
-  const { register, handleSubmit, reset, getValues, formState } = useForm();
+  // useForm'daki defaultValues sayesinde değerleri form'a aktardık.
+  const { register, handleSubmit, reset, getValues, formState } = useForm({
+    defaultValues: editValues,
+  });
 
   // Tüm hataları nesne olarak yakalıyoruz.
   const { errors } = formState;
 
-  // Cabin create için oluşturduğumuz custom hook.
-  const { isPending, mutate } = useCreateCabin();
+  // Burada custom hook ile edit işlemini yapıyoruz.
+  const { isPending, editMutate } = useEditCabin();
 
   function onSubmit(data) {
-    console.log(data);
+    // image verisi var mı diye bakıyoruz yoksa eski image'ı varsa yenisini atıyoruz.
+    const image = typeof data.image === "string" ? data.image : data.image[0];
     // input verilerine data ile erişim sağlıyoruz.
     // mutate içerisine image'ı dahil ediyoruz. image[0] sabit olarak kalacak.
-    mutate(
-      { ...data, image: data.image[0] },
+    editMutate(
+      { newCabinData: { ...data, image }, id: editId },
+      // İşlemler başarılıysa yeni verileri yakalamak istiyorsak burada yapabiliriz.
+      // aynı zamanda reset'i custom hook'a göndermeyede gerek kalmaz.
       {
         onSuccess: (data) => {
+          // istersek yeni verileri data ile yakalarız.
           console.log(data);
+          // başarılı olması durumunda istediğimizi burada çalıştırabiliriz.
           reset();
         },
       },
@@ -145,7 +155,9 @@ function CreateCabinForm() {
           id="image"
           accept="image/*"
           className="file-input"
-          {...register("image", { required: "This field is required" })}
+          {...register("image", {
+            required: false,
+          })}
         />
         {errors?.image?.message && (
           <span className="text-sm text-red-700">{errors.image.message}</span>
@@ -156,10 +168,10 @@ function CreateCabinForm() {
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button disabled={isPending}>Add cabin</Button>
+        <Button disabled={isPending}>Edit cabin</Button>
       </FormRow>
     </form>
   );
 }
 
-export default CreateCabinForm;
+export default EditCabinForm;
