@@ -1,12 +1,12 @@
 import { formatCurrency } from "../../utils/helpers.js";
-import { useState } from "react";
-import EditCabinForm from "./EditCabinForm.jsx";
 import { useDeleteCabin } from "./useDeleteCabin.js";
 import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import { useCreateCabin } from "./useCreateCabin.js";
+import Modal from "../../ui/Modal.jsx";
+import UpdateCabinForm from "./UpdateCabinForm.jsx";
+import ConfirmDelete from "../../ui/ConfirmDelete.jsx";
 
 function CabinListItem({ cabin }) {
-  const [showEditForm, setShowEditForm] = useState(false);
   const { id, image, name, capacity, description, regularPrice, discount } =
     cabin;
 
@@ -16,10 +16,6 @@ function CabinListItem({ cabin }) {
   // Duplicate için useCreateCabin hook kullanıyoruz.
   const { isPending: isDuplicatePending, mutate: duplicateMutate } =
     useCreateCabin();
-
-  function handleShowEditForm() {
-    setShowEditForm((show) => !show);
-  }
 
   function handleDuplicate() {
     duplicateMutate({
@@ -61,21 +57,37 @@ function CabinListItem({ cabin }) {
           >
             <HiSquare2Stack className="h-4 w-4" />
           </button>
-          <button onClick={handleShowEditForm} className="bg-emerald-200 p-2">
-            <HiPencil className="h-4 w-4" />
-          </button>
-          <button
-            className="bg-red-200 p-2"
-            disabled={isPending}
-            onClick={() => {
-              mutate(id);
-            }}
-          >
-            <HiTrash className="h-4 w-4" />
-          </button>
+          <div>
+            <Modal>
+              <Modal.Open opens="update-cabin-form">
+                <button className="bg-emerald-200 p-2">
+                  <HiPencil className="h-4 w-4" />
+                </button>
+              </Modal.Open>
+              <Modal.Window name="update-cabin-form">
+                <UpdateCabinForm cabin={cabin} />
+              </Modal.Window>
+            </Modal>
+          </div>
+          <div>
+            <Modal>
+              <Modal.Open opens="delete-cabin">
+                <button className="bg-red-200 p-2">
+                  <HiTrash className="h-4 w-4" />
+                </button>
+              </Modal.Open>
+              <Modal.Window name="delete-cabin">
+                <ConfirmDelete
+                  onConfirm={() => {
+                    mutate(id);
+                  }}
+                  disabled={isPending}
+                />
+              </Modal.Window>
+            </Modal>
+          </div>
         </div>
       </div>
-      {showEditForm && <EditCabinForm cabin={cabin} />}
     </>
   );
 }

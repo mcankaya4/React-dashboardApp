@@ -7,7 +7,7 @@ import FormTextarea from "../../ui/FormTextarea.jsx";
 import FormFileInput from "../../ui/FormFileInput.jsx";
 import Form from "../../ui/Form.jsx";
 
-function CreateCabinForm() {
+function CreateCabinForm({ onCloseModal }) {
   // hook-form ile inputları kayıt ediyoruz ve event'i karşılıyoruz.
   const { register, handleSubmit, reset, getValues, formState } = useForm();
 
@@ -27,6 +27,7 @@ function CreateCabinForm() {
         onSuccess: (data) => {
           console.log(data);
           reset();
+          onCloseModal();
         },
       },
     );
@@ -40,10 +41,7 @@ function CreateCabinForm() {
   }
 
   return (
-    <Form
-      onSubmit={handleSubmit(onSubmit, onError)}
-      className="overflow-hidden rounded-md border border-gray-200 bg-white px-10 py-6 text-sm"
-    >
+    <Form type="modal" onSubmit={handleSubmit(onSubmit, onError)}>
       <FormRow>
         <FormInput
           label="Cabin name"
@@ -123,7 +121,7 @@ function CreateCabinForm() {
       </FormRow>
 
       <FormRow>
-        <Button variation="secondary" type="reset">
+        <Button onClick={onCloseModal} variation="secondary" type="reset">
           Cancel
         </Button>
         <Button disabled={isPending}>Add cabin</Button>

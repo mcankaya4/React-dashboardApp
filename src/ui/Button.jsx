@@ -4,6 +4,7 @@ function Button({
   type,
   children,
   onClick,
+  disabled = false,
 }) {
   const sizes = {
     small: "text-xs py-1 px-2 uppercase font-semibold text-center",
@@ -22,6 +23,7 @@ function Button({
       onClick={onClick}
       className={`rounded-sm ${sizes[size]} ${variations[variation]}`}
       type={type}
+      disabled={disabled}
     >
       {children}
     </button>

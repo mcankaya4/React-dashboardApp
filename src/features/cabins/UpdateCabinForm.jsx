@@ -1,9 +1,10 @@
+import { useForm } from "react-hook-form";
 import FormRow from "../../ui/FormRow.jsx";
 import Button from "../../ui/Button.jsx";
-import { useForm } from "react-hook-form";
-import { useEditCabin } from "./useEditCabin.js";
+import { useUpdateCabin } from "./useUpdateCabin.js";
+import Form from "../../ui/Form.jsx";
 
-function EditCabinForm({ cabin = {} }) {
+function UpdateCabinForm({ cabin = {}, onCloseModal }) {
   const { id: editId, ...editValues } = cabin;
 
   // hook-form ile inputları kayıt ediyoruz ve event'i karşılıyoruz.
@@ -16,7 +17,7 @@ function EditCabinForm({ cabin = {} }) {
   const { errors } = formState;
 
   // Burada custom hook ile edit işlemini yapıyoruz.
-  const { isPending, editMutate } = useEditCabin();
+  const { isPending, editMutate } = useUpdateCabin();
 
   function onSubmit(data) {
     // image verisi var mı diye bakıyoruz yoksa eski image'ı varsa yenisini atıyoruz.
@@ -33,6 +34,7 @@ function EditCabinForm({ cabin = {} }) {
           console.log(data);
           // başarılı olması durumunda istediğimizi burada çalıştırabiliriz.
           reset();
+          onCloseModal();
         },
       },
     );
@@ -46,10 +48,7 @@ function EditCabinForm({ cabin = {} }) {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit, onError)}
-      className="overflow-hidden rounded-md border border-gray-200 bg-white px-10 py-6 text-sm"
-    >
+    <Form type="modal" onSubmit={handleSubmit(onSubmit, onError)}>
       <FormRow>
         <label htmlFor="name" className="font-medium">
           Cabin name
@@ -165,13 +164,13 @@ function EditCabinForm({ cabin = {} }) {
       </FormRow>
 
       <FormRow>
-        <Button variation="secondary" type="reset">
+        <Button variation="secondary" type="reset" onClick={onCloseModal}>
           Cancel
         </Button>
         <Button disabled={isPending}>Edit cabin</Button>
       </FormRow>
-    </form>
+    </Form>
   );
 }
 
-export default EditCabinForm;
+export default UpdateCabinForm;

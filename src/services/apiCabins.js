@@ -88,7 +88,7 @@ export async function createCabin(newCabin) {
 }
 
 // Edit cabin
-export async function editCabin(newCabin, id) {
+export async function updateCabin(newCabin, id) {
   const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
 
   // Image güncellenmediyse aynı kaydet, güncelleme varsa yeni path ve name belirle.
