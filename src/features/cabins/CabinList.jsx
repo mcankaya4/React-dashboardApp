@@ -1,7 +1,8 @@
 import Spinner from "../../ui/Spinner.jsx";
-import CabinListHeader from "./CabinListHeader.jsx";
 import CabinListItem from "./CabinListItem.jsx";
 import { useGetCabins } from "./useGetCabins.js";
+import Table from "../../ui/Table.jsx";
+import Menus from "../../ui/Menus.jsx";
 
 function CabinList() {
   // custom hook ile cabins, isPending ve error verilerini alıyoruz.
@@ -11,15 +12,25 @@ function CabinList() {
   if (isPending) return <Spinner />;
 
   return (
-    <div
-      className="overflow-hidden rounded-lg border border-gray-200 bg-white text-sm"
-      role="table"
-    >
-      <CabinListHeader />
-      {cabins.map((cabin) => (
-        <CabinListItem key={cabin.id} cabin={cabin} />
-      ))}
-    </div>
+    <Menus>
+      <Table columns="grid-cols-[0.6fr_1.8fr_2.2fr_1fr_1fr_1fr]">
+        <Table.Header>
+          <div></div>
+          <div>Cabin</div>
+          <div>Capacity</div>
+          <div>Price</div>
+          <div>Discount</div>
+          <div></div>
+        </Table.Header>
+        <Table.Body>
+          {cabins.map((cabin) => (
+            <Table.Row key={cabin.id}>
+              <CabinListItem cabin={cabin} />
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table>
+    </Menus>
   );
 }
 
