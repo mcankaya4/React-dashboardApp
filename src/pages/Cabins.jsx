@@ -1,17 +1,18 @@
 import Row from "../ui/Row.jsx";
-import CabinList from "../features/cabins/CabinList.jsx";
+import CabinTable from "../features/cabins/CabinTable.jsx";
 import AddCabin from "../features/cabins/AddCabin.jsx";
+import CabinTableOperations from "../features/cabins/CabinTableOperations.jsx";
 
 function Cabins() {
   return (
     <>
       <Row type="horizontal">
-        <h1>Cabins</h1>
-        <p>Filter / Sort</p>
+        <h1>All cabins</h1>
+        <CabinTableOperations />
       </Row>
 
       <Row>
-        <CabinList />
+        <CabinTable />
         <AddCabin />
       </Row>
     </>

@@ -3,24 +3,28 @@ import { deleteCabin } from "../../services/apiCabins.js";
 import toast from "react-hot-toast";
 
 export function useDeleteCabin() {
-  // We include queryClient for the refresh after the deletion.
   const queryClient = useQueryClient();
 
-  // isPending replaces the loading logic
-  // Fn where we execute the deleteCabin function by giving id in mutate
   const { isPending, mutate } = useMutation({
-    // mutationFn: (id) => deleteCabin(id),
-    mutationFn: deleteCabin,
-    // If the operation is successful
+    mutationFn: async (id) => {
+      // 1. Kullanıcıya yükleniyor mesajı göster
+      const toastId = toast.loading("Deleting...");
+
+      try {
+        await deleteCabin(id);
+        // 2. Başarılıysa aynı toast'ı ID üzerinden güncelle
+        toast.success("Cabin deleted", { id: toastId });
+      } catch (error) {
+        // 3. Hata varsa hata mesajı göster
+        toast.error(error.message, { id: toastId });
+        throw error; // React Query'nin hata yakalaması için
+      }
+    },
     onSuccess: () => {
-      toast.success("Cabin deleted");
+      // 4. Cache’i güncelle
       queryClient.invalidateQueries({
         queryKey: ["cabins"],
       });
-    },
-    // If the operation fails
-    onError: (error) => {
-      toast.error(error.message);
     },
   });
 

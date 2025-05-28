@@ -7,7 +7,7 @@ import UpdateCabinForm from "./UpdateCabinForm.jsx";
 import ConfirmDelete from "../../ui/ConfirmDelete.jsx";
 import Menus from "../../ui/Menus.jsx";
 
-function CabinListItem({ cabin }) {
+function CabinTableRow({ cabin }) {
   const { id, image, name, capacity, description, regularPrice, discount } =
     cabin;
 
@@ -101,4 +101,4 @@ function CabinListItem({ cabin }) {
   );
 }
 
-export default CabinListItem;
+export default CabinTableRow;
