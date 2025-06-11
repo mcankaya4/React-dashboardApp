@@ -1,11 +1,19 @@
 import Row from "../ui/Row.jsx";
+import BookingTableOperations from "../features/bookings/BookingTableOperations.jsx";
+import BookingTable from "../features/bookings/BookingTable.jsx";
 
 function Bookings() {
   return (
-    <Row>
-      <h1>All Bookings</h1>
-      <p>Test</p>
-    </Row>
+    <>
+      <Row type="horizontal">
+        <h1>All bookings</h1>
+        <BookingTableOperations />
+      </Row>
+
+      <Row>
+        <BookingTable />
+      </Row>
+    </>
   );
 }
 

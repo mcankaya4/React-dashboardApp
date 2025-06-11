@@ -1,142 +1,85 @@
-import supabase, { supabaseUrl } from "./supabase.js";
-
 // All select cabins
-export async function getCabins() {
-  // Bunun iç kısmını supabase'den hazır alıyoruz.
-  const { data, error } = await supabase.from("cabins").select("*");
-  if (error) {
-    console.log(error);
-    throw new Error("Could not get cabins from supabase");
-  }
-  return data;
-}
+import { APIURL } from "../utils/constants.js";
 
-// // Create cabin
-// export async function createEditCabin(newCabin, id) {
-//   const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
-//
-//   const imgName = `${Math.random()}-${newCabin.image.name}`.replace("/", "");
-//   const imgPath = hasImagePath
-//     ? newCabin.image
-//     : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imgName}`;
-//
-//   let query = supabase.from("cabins");
-//
-//   // Create
-//   if (!id) query = query.insert({ ...newCabin, image: imgPath });
-//
-//   // Edit
-//   if (id) query = query.update({ ...newCabin, image: imgPath }).eq("id", id);
-//
-//   const { data, error } = await query.select().single();
-//
-//   if (error) {
-//     console.log(error);
-//     throw new Error("Cannot create cabin from supabase");
-//   }
-//
-//   // upload img
-//   const { error: storageError } = await supabase.storage
-//     .from("cabin-images")
-//     .upload(imgName, newCabin.image);
-//
-//   // image yükleme hatası var ise data.id'ye ait elemanı siliyoruz.
-//   if (storageError) {
-//     await supabase.from("cabins").delete().eq("id", data.id);
-//     console.log(storageError);
-//     throw new Error("storageImage cannot be deleted");
-//   }
-//   return data;
-// }
+export async function getCabins() {
+  const res = await fetch(`${APIURL}/cabins`);
+
+  if (!res.ok) {
+    const error = await res.json();
+    console.error(error);
+    throw new Error("Could not get cabins from Laravel API");
+  }
+
+  return await res.json();
+}
 
 // Create cabin
 export async function createCabin(newCabin) {
-  const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
+  const formData = new FormData();
 
-  // Image güncellenmediyse aynı kaydet, güncelleme varsa yeni path ve name belirle.
-  const imgName = `${Math.random()}-${newCabin.image.name}`.replace("/", "");
-  const imgPath = hasImagePath
-    ? newCabin.image
-    : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imgName}`;
+  Object.entries(newCabin).forEach(([key, value]) => {
+    formData.append(key, value);
+  });
 
-  const { data, error } = await supabase
-    .from("cabins")
-    .insert({ ...newCabin, image: imgPath })
-    .select();
+  const res = await fetch(`${APIURL}/cabins`, {
+    method: "POST",
+    body: formData,
+  });
 
-  if (error) {
-    console.log(error);
-    throw new Error("Cannot create cabin from supabase");
+  if (!res.ok) {
+    const error = await res.json();
+    console.error(error);
+    throw new Error("Cabin could not be created");
   }
 
-  // Burası duplicate için yazıldı, eğer zaten bir image varsa string olan o halde
-  // yükleme yapma
-  if (hasImagePath) return data;
-
-  // upload img
-  const { error: storageError } = await supabase.storage
-    .from("cabin-images")
-    .upload(imgName, newCabin.image);
-
-  // image yükleme hatası var ise data.id'ye ait elemanı siliyoruz.
-  if (storageError) {
-    await supabase.from("cabins").delete().eq("id", data.id);
-    console.log(storageError);
-    throw new Error("storageImage cannot be deleted");
-  }
-  return data;
+  return await res.json();
 }
 
 // Edit cabin
 export async function updateCabin(newCabin, id) {
-  const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
+  const formData = new FormData();
 
-  // Image güncellenmediyse aynı kaydet, güncelleme varsa yeni path ve name belirle.
-  const imgName = `${Math.random()}-${newCabin.image.name}`.replace("/", "");
-  const imgPath = hasImagePath
-    ? newCabin.image
-    : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imgName}`;
+  // Laravel'e method spoofing için ekle
+  formData.append("_method", "PUT");
 
-  const { data, error } = await supabase
-    .from("cabins")
-    .update({ ...newCabin, image: imgPath })
-    .eq("id", id)
-    .select()
-    .single();
+  Object.entries(newCabin).forEach(([key, value]) => {
+    if (key === "image") {
+      if (value instanceof File) {
+        formData.append("image", value);
+      }
+    } else {
+      formData.append(key, value);
+    }
+  });
 
-  if (error) {
-    console.log(error);
-    throw new Error("Cannot create cabin from supabase");
+  const res = await fetch(`${APIURL}/cabins/${id}`, {
+    method: "POST", // PUT yerine POST, çünkü FormData ile PUT sıkıntı çıkarabiliyor
+    body: formData,
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    console.error(error);
+    throw new Error("Cabin could not be updated");
   }
 
-  // Burası duplicate için yazıldı, eğer zaten bir image varsa string olan o halde
-  // yükleme yapma
-  if (hasImagePath) return data;
-
-  // upload img
-  const { error: storageError } = await supabase.storage
-    .from("cabin-images")
-    .upload(imgName, newCabin.image);
-
-  // image yükleme hatası var ise data.id'ye ait elemanı siliyoruz.
-  if (storageError) {
-    await supabase.from("cabins").delete().eq("id", data.id);
-    console.log(storageError);
-    throw new Error("storageImage cannot be deleted");
-  }
-  return data;
+  return await res.json();
 }
 
 // Delete cabin (id params)
 export async function deleteCabin(cabinId) {
-  // Bunun iç kısmını supabase'den hazır alıyoruz. Fakat izinler düzenlenmesi gerekir.
-  const { data, error } = await supabase
-    .from("cabins")
-    .delete()
-    .eq("id", cabinId);
-  if (error) {
-    console.log(error);
-    throw new Error("Cannot delete cabin from supabase");
+  const res = await fetch(`${APIURL}/cabins/${cabinId}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    console.error(error);
+    throw new Error("Cabin could not be deleted from Laravel API");
   }
-  return data;
+
+  return await res.json();
 }

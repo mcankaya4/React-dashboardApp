@@ -73,11 +73,11 @@ function CreateCabinForm({ onCloseModal }) {
       <FormRow>
         <FormInput
           label="Regular price"
-          id="regularPrice"
+          id="price"
           type="number"
           register={register}
           validation={{ required: "This field is required" }}
-          error={errors?.regularPrice}
+          error={errors?.price}
         />
       </FormRow>
 

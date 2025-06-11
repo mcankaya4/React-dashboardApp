@@ -88,19 +88,17 @@ function UpdateCabinForm({ cabin = {}, onCloseModal }) {
       </FormRow>
 
       <FormRow>
-        <label htmlFor="regularPrice" className="font-medium">
+        <label htmlFor="price" className="font-medium">
           Regular price
         </label>
         <input
-          id="regularPrice"
+          id="price"
           type="number"
           className="rounded-sm border border-gray-300 bg-white px-3 py-2 shadow-sm"
-          {...register("regularPrice", { required: "This field is required" })}
+          {...register("price", { required: "This field is required" })}
         />
-        {errors?.regularPrice?.message && (
-          <span className="text-sm text-red-700">
-            {errors.regularPrice.message}
-          </span>
+        {errors?.price?.message && (
+          <span className="text-sm text-red-700">{errors.price.message}</span>
         )}
       </FormRow>
 

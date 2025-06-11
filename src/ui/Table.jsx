@@ -37,7 +37,7 @@ function Row({ children }) {
   return (
     <div
       role="row"
-      className={`grid items-center gap-6 px-6 py-5 not-last:border-b not-last:border-b-gray-100 ${columns}`}
+      className={`grid items-center gap-6 px-6 py-3.5 not-last:border-b not-last:border-b-gray-100 ${columns}`}
     >
       {children}
     </div>
@@ -45,12 +45,21 @@ function Row({ children }) {
 }
 
 function Footer({ children }) {
-  return children;
+  return (
+    <footer className="flex justify-center bg-gray-50 p-3">{children}</footer>
+  );
+}
+
+function Empty({ children }) {
+  return (
+    <div className="m-6 text-center text-base font-medium">{children}</div>
+  );
 }
 
 Table.Header = Header;
 Table.Body = Body;
 Table.Row = Row;
 Table.Footer = Footer;
+Table.Empty = Empty;
 
 export default Table;

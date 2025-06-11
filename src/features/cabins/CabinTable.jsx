@@ -39,7 +39,9 @@ function CabinTable() {
           <div></div>
         </Table.Header>
         <Table.Body>
-          {/* Burada cabins lenght 0 sorgusu yap ve Empty göster. */}
+          {!cabins.length && (
+            <Table.Empty>No cabin has been added yet.</Table.Empty>
+          )}
           {filteredAndSortedCabins.map((cabin) => (
             <Table.Row key={cabin.id}>
               <CabinTableRow cabin={cabin} />

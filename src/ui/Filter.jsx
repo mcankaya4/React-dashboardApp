@@ -7,6 +7,11 @@ function Filter({ filterField, options }) {
     // 1. Parametre dinamik bir değişken
     searchParams.set(filterField, value);
     setSearchParams(searchParams); // güncellenmiş params'ı set et
+
+    if (searchParams.get("page")) {
+      searchParams.set("page", 1);
+      setSearchParams(searchParams);
+    }
   }
 
   const activeTab = searchParams.get(filterField) || options.at(0).value;

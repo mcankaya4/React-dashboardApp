@@ -1,33 +1,30 @@
-import supabase from "./supabase.js";
+import { APIURL } from "../utils/constants.js";
 
-// Get settings selected has id=1
 export async function getSettings() {
-  // Bunun iç kısmını supabase'den hazır alıyoruz.
-  // id'si 1 olan settings'i çekiyoruz.
-  const { data, error } = await supabase
-    .from("settings")
-    .select("*")
-    .eq("id", 1)
-    .single();
+  const res = await fetch(`${APIURL}/settings`);
 
-  if (error) {
-    console.log(error);
-    throw new Error("Could not get cabins from supabase");
+  if (!res.ok) {
+    throw new Error("Could not fetch settings from Laravel API");
   }
-  return data;
+
+  return await res.json();
 }
 
-// We expect a newSetting object that looks like {setting: newValue}
+// newSetting örneği: { minBookingLenght: 2 }
 export async function updateSetting(newSetting) {
-  const { data, error } = await supabase
-    .from("settings")
-    .update(newSetting)
-    .eq("id", 1)
-    .single();
+  const res = await fetch(`${APIURL}/settings`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newSetting),
+  });
 
-  if (error) {
-    console.error(error);
+  if (!res.ok) {
+    const errorData = await res.json();
+    console.error(errorData);
     throw new Error("Settings could not be updated");
   }
-  return data;
+
+  return await res.json();
 }

@@ -1,6 +1,6 @@
 function Form({ children, onSubmit, type = "default" }) {
   const styles = {
-    default: "rounded-md bg-white px-10 py-6",
+    default: "min-w-[480px] rounded-md bg-white px-10 py-6",
     modal: "min-w-[800px] py-1",
   };
   return (
